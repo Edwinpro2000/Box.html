@@ -1,0 +1,8 @@
+{
+  "name": "kartgame",
+  "version": "1.0.0",
+  "description": "Servidor multijugador de KartGame",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=16" }
+}
