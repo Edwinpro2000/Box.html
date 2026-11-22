@@ -1,3 +1,7 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0e0f11">
+<meta name="mobile-web-app-capable" content="yes">
 <title>KartGame</title>
 <style>
 :root{--bg:#0e0f11;--fg:#fff;--btn:rgba(255,255,255,.16);--btn-on:rgba(255,255,255,.42);color-scheme:dark}
@@ -12,7 +16,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hid
 #bg{right:max(12px,env(safe-area-inset-right,0px));bottom:calc(max(14px,env(safe-area-inset-bottom,0px)) + 26px);width:96px;height:96px;font-size:18px}
 #bd{right:calc(max(12px,env(safe-area-inset-right,0px)) + 108px);bottom:max(14px,env(safe-area-inset-bottom,0px));width:68px;height:68px;font-size:13px}
 #bb{right:calc(max(12px,env(safe-area-inset-right,0px)) + 108px);bottom:calc(max(14px,env(safe-area-inset-bottom,0px)) + 78px);width:52px;height:52px;font-size:11px}
-#msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(10,12,14,.55);text-align:center;padding:24px}
+#msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;overflow-y:auto;gap:14px;background:rgba(10,12,14,.78);text-align:center;padding:24px}
 #msg[hidden]{display:none}
 #msg h2{margin:0;font-size:clamp(20px,4vw,30px);font-weight:800}
 .scr{display:flex;flex-direction:column;align-items:center;gap:14px}.scr[hidden]{display:none}
@@ -21,6 +25,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hid
 .mb{font:800 20px system-ui;padding:14px 0;width:min(260px,70vw);border-radius:14px;border:0;background:#fff;color:#111;cursor:pointer}
 .mb.alt{background:#ffc928}
 #rc{text-transform:uppercase;letter-spacing:.3em}
+#srv{font:600 13px system-ui!important;letter-spacing:0!important;text-transform:none!important;padding:8px 12px!important}
 #net-err{color:#ff9a9a!important;min-height:1.3em;margin:0!important}
 #lb-share{user-select:text;-webkit-user-select:text;font-size:13px;word-break:break-all;background:rgba(255,255,255,.12);padding:8px 12px;border-radius:10px;max-width:min(420px,86vw);cursor:pointer;margin:0}
 #lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;width:min(260px,70vw)}
@@ -32,6 +37,9 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hid
 #msg h1{margin:0;font-size:clamp(28px,6vw,54px);font-weight:900;letter-spacing:.02em;text-wrap:balance}
 #msg p{margin:0;opacity:.85;font-size:clamp(13px,2.4vw,18px);max-width:34em;line-height:1.5}
 #go{font:800 18px system-ui;padding:12px 28px;border-radius:999px;border:0;background:#fff;color:#111;cursor:pointer}
+#fs{position:absolute;top:max(8px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:38px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:16px;line-height:1;cursor:pointer;z-index:3;padding:0}
+#fs:hover{background:rgba(255,255,255,.3)}
+#fs[hidden]{display:none}
 #turn{position:absolute;top:6px;left:0;right:0;text-align:center;font-size:12px;opacity:.8;pointer-events:none}
 </style>
 <div id="stage">
@@ -40,13 +48,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hid
     <div class="b" id="bl">◀</div><div class="b" id="br">▶</div>
     <div class="b" id="bb">FRENO</div><div class="b" id="bd">DERRAPE</div><div class="b" id="bg">ACELERAR</div>
   </div>
+  <button id="fs" title="Pantalla completa (F)">⛶</button>
   <div id="turn" hidden>Gira el celular para jugar mejor</div>
   <div id="msg">
-    <div class="scr" id="s-title"><h1>KartGame</h1><p>Carreras de karts</p><button class="mb" id="b-start">Empezar</button></div>
+    <div class="scr" id="s-title"><h1>KartGame</h1><p>Carreras de karts</p><button class="mb" id="b-start">Empezar</button><p class="sm" style="margin:0;line-height:1.6">PC: flechas o WASD · Espacio = derrapar · F = pantalla completa<br>Celular: botones en pantalla · También funciona con control de consola</p></div>
     <div class="scr" id="s-name" hidden><h2>¿Cómo te llamas?</h2><input id="nm" maxlength="12" autocomplete="off" placeholder="Tu nombre"><button class="mb" id="b-ok">Continuar</button></div>
     <div class="scr" id="s-mode" hidden><h2>Hola, <span id="hi"></span></h2><button class="mb alt" id="b-online">En línea</button><button class="mb" id="b-solo">Solo</button><p>Solo: carrera contra bots.<br>En línea: con personas reales.</p><button class="mb ghost" id="b-chg">Cambiar nombre</button></div>
-    <div class="scr" id="s-online" hidden><h2>Multijugador</h2><button class="mb alt" id="b-local">Local</button><p class="sm">Con amigos en la misma red WiFi</p><button class="mb alt" id="b-inet">En línea</button><p class="sm">Por internet, cada quien desde su casa</p><button class="mb ghost" id="b-back">Volver</button></div>
-    <div class="scr" id="s-net" hidden><h2 id="net-t"></h2><p id="net-p"></p><button class="mb alt" id="b-create">Crear sala</button><input id="rc" maxlength="5" autocomplete="off" placeholder="CÓDIGO"><button class="mb" id="b-join">Unirse</button><p id="net-err"></p><button class="mb ghost" id="b-back2">Volver</button></div>
+    <div class="scr" id="s-online" hidden><h2>Multijugador</h2><button class="mb alt" id="b-local">Local</button><p class="sm">Con amigos en la misma red WiFi</p><button class="mb alt" id="b-inet">En línea</button><p class="sm">Por internet, cada quien desde su casa</p><button class="mb alt" id="b-p2p">Directo</button><p class="sm">Sin servidor, entre celulares</p><button class="mb ghost" id="b-back">Volver</button></div>
+    <div class="scr" id="s-net" hidden><h2 id="net-t"></h2><p id="net-p"></p><button class="mb alt" id="b-create">Crear sala</button><input id="rc" maxlength="5" autocomplete="off" placeholder="CÓDIGO"><button class="mb" id="b-join">Unirse</button><input id="srv" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Servidor (solo si el juego está en GitHub Pages)"><p id="net-err"></p><button class="mb ghost" id="b-back2">Volver</button></div>
     <div class="scr" id="s-lobby" hidden><h2>Sala <span id="lb-code"></span></h2><p class="sm" style="margin:0">Comparte este enlace (toca para copiar)</p><p id="lb-share"></p><ul id="lb-list"></ul><p id="lb-wait" class="sm" style="margin:0"></p><button class="mb alt" id="b-begin">Iniciar carrera</button><button class="mb ghost" id="b-leave">Salir</button></div>
     <div class="scr" id="s-end" hidden><h1 id="mt"></h1><p>Tres vueltas completas.</p><button class="mb" id="go">Correr otra vez</button><button class="mb ghost" id="b-menu">Menú</button></div>
   </div>
@@ -60,6 +69,7 @@ const stage=document.getElementById('stage');
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const angDiff=(a,b)=>{let d=(a-b)%TAU;if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;return d};
 const coarse=matchMedia('(pointer:coarse)').matches||('ontouchstart' in window);
+let touchUI=coarse;
 
 /* ---------- pista ---------- */
 const CP=[[0,0],[150,-16],[300,0],[410,80],[430,210],[360,320],[240,340],[180,270],[110,235],[40,270],[-40,340],[-170,330],[-250,220],[-235,90],[-140,25]];
@@ -279,7 +289,7 @@ function collideKarts(){
 }
 
 /* ---------- render ---------- */
-let W=480,H=240,F=192,HZ=120,img,buf,wallDepth,rowDist;
+let W=480,H=240,F=192,HZ=120,img,buf,wallDepth,rowDist,QH=(matchMedia('(pointer:coarse)').matches?240:320);
 const CAMD=6.5,CAMH=3.2;
 const pack=(r,g,b)=>(255<<24)|(b<<16)|(g<<8)|r;
 const PAL=[
@@ -293,17 +303,17 @@ const START=C[0];
 const rowC=new Uint32Array(10);
 function resize(){
   const cw=stage.clientWidth||640,ch=stage.clientHeight||360;
-  const asp=clamp(cw/ch,1.25,2.3);
-  H=240;W=Math.round(H*asp);
+  const asp=clamp(cw/ch,0.75,2.3);
+  H=QH;W=Math.round(H*asp);
   cv.width=W;cv.height=H;
   let sw=cw,sh=cw/asp;if(sh>ch){sh=ch;sw=ch*asp}
   cv.style.width=sw+'px';cv.style.height=sh+'px';
-  F=H*0.8;HZ=Math.floor(H*0.5);
+  F=asp>=1.25?H*0.8:W*0.64;HZ=Math.floor(H*0.5);
   img=ctx.createImageData(W,H);buf=new Uint32Array(img.data.buffer);
   wallDepth=new Float32Array(W);
   rowDist=new Float32Array(H);
   for(let y=HZ;y<H;y++)rowDist[y]=CAMH*F/(y+0.5-HZ);
-  document.getElementById('turn').hidden=!(coarse&&cw<ch);
+  document.getElementById('turn').hidden=!(touchUI&&cw<ch);
 }
 addEventListener('resize',resize);
 
@@ -395,7 +405,7 @@ function render(){
     const spr=SPR[k.acc][k.lean+1];
     const x0=Math.round(sx-sw/2),x1=Math.round(sx+sw/2),y0=Math.round(bottom-sh),h=Math.round(bottom)-y0,w=x1-x0;
     if(w<1||h<1)continue;
-    if(e.depth<45&&sx>0&&sx<W&&e.depth<wallDepth[clamp(Math.round(sx),0,W-1)]){
+    if(e.depth<28&&sx>0&&sx<W&&e.depth<wallDepth[clamp(Math.round(sx),0,W-1)]){
       ctx.font=`700 ${Math.max(7,H*0.036)}px system-ui,sans-serif`;ctx.textAlign='center';
       ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillText(k.name,sx+1,y0-1);
       ctx.fillStyle=k.i===PI?'#ffc928':'#fff';ctx.fillText(k.name,sx,y0-2);
@@ -421,12 +431,12 @@ const MM=document.createElement('canvas');MM.width=MM.height=72;
   g.closePath();g.stroke();MM._s=s;
 })();
 function hud(){
-  const p=karts[PI],fs=H*0.072;
+  const p=karts[PI],fs=H*0.072*Math.min(1,W/320+0.2);
   ctx.textBaseline='alphabetic';
   // velocímetro
   const kmh=Math.round(Math.max(0,p.v)*2.6);
   ctx.font=`800 ${fs}px system-ui,sans-serif`;ctx.textAlign='right';
-  const bx=W-10,by=coarse?fs+8:H-H*0.075;
+  const bx=W-10,by=touchUI?fs+8:H-H*0.075;
   ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillText(kmh+' km/h',bx+1,by+1);
   ctx.fillStyle='#fff';ctx.fillText(kmh+' km/h',bx,by);
   const bw=W*0.18,bh=H*0.024,bx0=W-10-bw,by0=by+H*0.014;
@@ -459,6 +469,25 @@ function hud(){
 }
 
 /* ---------- bucle ---------- */
+const gpad={steer:0,gas:0,brake:0,drift:0};
+function pollPad(){
+  gpad.steer=gpad.gas=gpad.brake=gpad.drift=0;
+  const list=(navigator.getGamepads&&navigator.getGamepads())||[];
+  for(const g of list){
+    if(!g||!g.connected)continue;
+    const b=i=>g.buttons[i]&&g.buttons[i].pressed,ax=g.axes[0]||0;
+    let st=Math.abs(ax)>0.18?ax:0;if(b(14))st=-1;if(b(15))st=1;
+    gpad.steer=st;
+    gpad.gas=(b(7)||b(0)||(g.buttons[7]&&g.buttons[7].value>0.2))?1:0;
+    gpad.brake=(b(6)||b(1))?1:0;
+    gpad.drift=(b(5)||b(2)||b(4))?1:0;
+    if(gpad.steer||gpad.gas||gpad.brake||gpad.drift)break;
+  }
+}
+function readInput(){
+  pollPad();
+  return {steer:clamp(inp.r-inp.l+gpad.steer,-1,1),gas:inp.gas||gpad.gas,brake:inp.brake||gpad.brake,drift:inp.drift||gpad.drift};
+}
 function update(dt){
   T+=dt;
   if(state==='cd'){cd-=dt;if(cd<=0){state='race';goT=0.9}}
@@ -468,7 +497,7 @@ function update(dt){
     for(const k of karts){
       if(k.remote){netSmooth(k,dt);continue}
       let I;
-      if(k===p&&state==='race'){I={steer:inp.r-inp.l,gas:inp.gas,brake:inp.brake,drift:inp.drift};k.human=true}
+      if(k===p&&state==='race'){I=readInput();k.human=true}
       else I=aiInput(k,dt);
       step(k,I,dt);
     }
@@ -489,7 +518,7 @@ function update(dt){
 }
 
 /* ---------- red ---------- */
-let netMode='online',netAcc=0;
+let netMode='online',netAcc=0,netCustom='';
 function netSmooth(k,dt){
   const n=k.net;if(!n)return;
   n.x+=Math.cos(n.phi)*n.v*dt;n.z+=Math.sin(n.phi)*n.v*dt;
@@ -527,15 +556,30 @@ function leaveMP(msg){
 }
 function openNet(mode){
   netMode=mode;
-  $('net-t').textContent=mode==='local'?'Modo local':'Modo en línea';
-  $('net-p').textContent=mode==='local'?'Misma red WiFi: una persona crea la sala y los demás se unen con el código.':'Por internet: una persona crea la sala y comparte el código. Cada quien con su WiFi o datos.';
+  $('net-t').textContent=mode==='local'?'Modo local':mode==='p2p'?'Conexión directa':'Modo en línea';
+  $('net-p').textContent=mode==='local'?'Misma red WiFi: una persona crea la sala y los demás se unen con el código.':
+    mode==='p2p'?'Sin servidor: la sala vive en el celular del anfitrión. Si el anfitrión sale, la sala se cierra.':
+    'Por internet: una persona crea la sala y comparte el código. Cada quien con su WiFi o datos.';
+  $('srv').hidden=mode==='p2p';
   $('net-err').textContent='';screen('s-net');
+}
+function connect(first){
+  if(netMode==='p2p'){$('net-err').textContent='';dropConn();if(first.t==='create')p2pCreate(first.name);else p2pJoin(first.room,first.name)}
+  else netConnect(first);
 }
 function netConnect(first){
   $('net-err').textContent='';dropConn();
-  if(location.protocol==='file:'||!location.host){$('net-err').textContent='Para jugar con otros abre el juego desde tu servidor (mira el README).';return}
+  let custom=$('srv').value.trim();
+  if(custom){
+    custom=custom.replace(/^https:/i,'wss:').replace(/^http:/i,'ws:');
+    if(!/^wss?:/i.test(custom))custom='wss://'+custom;
+    custom=custom.replace(/\/+$/,'');if(!/\/ws$/.test(custom))custom+='/ws';
+    try{localStorage.setItem('kg_srv',$('srv').value.trim())}catch(e){}
+    if(location.protocol==='https:'&&/^ws:/i.test(custom)){$('net-err').textContent='Desde una página https el servidor también debe ser https (por ejemplo uno en Render).';return}
+  }else if(location.protocol==='file:'||!location.host){$('net-err').textContent='Escribe la dirección de tu servidor, o abre el juego desde el servidor (mira el README).';return}
   let ws,opened=false;
-  try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws')}catch(e){$('net-err').textContent='No se pudo conectar al servidor.';return}
+  try{ws=new WebSocket(custom||((location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'))}catch(e){$('net-err').textContent='No se pudo conectar al servidor.';return}
+  netCustom=custom;
   const to=setTimeout(()=>{if(!opened)try{ws.close()}catch(e){}},7000);
   ws.onopen=()=>{
     opened=true;clearTimeout(to);
@@ -546,7 +590,7 @@ function netConnect(first){
   ws.onmessage=ev=>{try{netMsg(JSON.parse(ev.data))}catch(e){console.error(e)}};
   ws.onclose=()=>{
     clearTimeout(to);
-    if(!opened){$('net-err').textContent='No hay servidor en esta dirección. Abre el juego desde tu servidor (mira el README).';return}
+    if(!opened){$('net-err').textContent=custom?'No pude conectar con ese servidor. Revisa la dirección (si es gratis puede tardar ~30 s en despertar, intenta otra vez).':'No hay servidor en esta dirección. Escribe la dirección de tu servidor o abre el juego desde él (mira el README).';return}
     if(MP&&MP.ws===ws)leaveMP('Se perdió la conexión con la sala.');
   };
 }
@@ -562,13 +606,126 @@ function netMsg(m){
   if(m.t==='lobby'){MP.live=false;state='ready';screen('s-lobby');renderLobby();return}
   if(m.t==='s'&&MP.live)applyStates(m.d);
 }
+
+/* ---------- conexión directa (WebRTC con PeerJS): el anfitrión hace de servidor ---------- */
+const PEER_URLS=['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
+function loadPeer(cb){
+  if(window.Peer)return cb();
+  let i=0;
+  (function next(){
+    if(i>=PEER_URLS.length)return cb('No se pudo cargar la conexión directa. Revisa tu internet.');
+    const sc=document.createElement('script');sc.src=PEER_URLS[i++];
+    sc.onload=()=>window.Peer?cb():next();sc.onerror=()=>{sc.remove();next()};document.head.appendChild(sc);
+  })();
+}
+const setErr=t=>{$('net-err').textContent=t};
+const cleanName=n=>String(n||'Jugador').replace(/[<>]/g,'').slice(0,12)||'Jugador';
+function newMP(api){return {ws:api,slot:-1,hostSlot:-1,host:false,humans:new Set(),names:{},players:[],live:false,code:'',lan:[],port:0,p2p:true,ping:0}}
+function makeHub(code){
+  const H={code,players:new Map(),host:0,started:false};
+  const err=m=>JSON.stringify({t:'err',m});
+  H.list=()=>[...H.players.values()].map(q=>({slot:q.slot,name:q.name}));
+  H.bcast=(msg,exc)=>{const t=JSON.stringify(msg);for(const q of H.players.values())if(q!==exc)q.send(t)};
+  H.sendPlayers=()=>H.bcast({t:'players',players:H.list(),host:H.host});
+  H.join=(conn,name)=>{
+    if(H.started){conn.send(err('La carrera ya empezó'));return null}
+    if(H.players.size>=NK){conn.send(err('La sala está llena'));return null}
+    let slot=0;while(H.players.has(slot))slot++;
+    const q={slot,name:cleanName(name),send:conn.send,close:conn.close};
+    H.players.set(slot,q);
+    q.send(JSON.stringify({t:'joined',room:code,slot,host:H.host,players:H.list(),lan:[],port:0}));
+    H.sendPlayers();return q;
+  };
+  H.msg=(q,t)=>{
+    let m;try{m=typeof t==='string'?JSON.parse(t):t}catch(e){return}
+    if(!m||!q)return;
+    if(m.t==='s'){if(Array.isArray(m.d)&&m.d.length<=9)H.bcast({t:'s',d:m.d},q)}
+    else if(m.t==='start'){
+      if(H.host!==q.slot)return;
+      if(H.players.size<2){q.send(err('Faltan jugadores: se necesitan al menos 2'));return}
+      H.started=true;H.bcast({t:'start',players:H.list()});
+    }else if(m.t==='again'){
+      if(H.host!==q.slot)return;
+      H.started=false;H.bcast({t:'lobby'});H.sendPlayers();
+    }
+  };
+  H.drop=q=>{if(H.players.delete(q.slot))H.sendPlayers()};
+  return H;
+}
+function randCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<4;i++)c+=A[Math.random()*A.length|0];return c}
+function p2pCreate(name){
+  setErr('Creando sala...');
+  loadPeer(e=>{
+    if(e)return setErr(e);
+    let tries=0;
+    const attempt=()=>{
+      const code=randCode();let peer,opened=false;
+      try{peer=new Peer('kgame-'+code)}catch(x){return setErr('No se pudo iniciar la conexión directa.')}
+      const to=setTimeout(()=>{if(!opened){setErr('El servicio de conexión directa no responde. Intenta otra vez.');try{peer.destroy()}catch(x){}}},12000);
+      peer.on('open',()=>{opened=true;clearTimeout(to);startHost(peer,code,name)});
+      peer.on('error',er=>{
+        if(!opened&&er.type==='unavailable-id'&&tries++<5){clearTimeout(to);try{peer.destroy()}catch(x){}attempt();return}
+        if(!opened){clearTimeout(to);setErr('No se pudo conectar ('+er.type+'). Intenta otra vez.')}
+      });
+      peer.on('disconnected',()=>{try{peer.reconnect()}catch(x){}});
+    };
+    attempt();
+  });
+}
+function startHost(peer,code,name){
+  const hub=makeHub(code);let hostP=null;
+  const api={readyState:1,send:t=>hub.msg(hostP,t),close(){try{peer.destroy()}catch(x){}}};
+  MP=newMP(api);
+  const local={send:t=>setTimeout(()=>{if(MP&&MP.ws===api)netMsg(JSON.parse(t))},0),close(){}};
+  hostP=hub.join(local,name);
+  peer.on('connection',conn=>{
+    let q=null;
+    conn.on('data',d=>{
+      if(!q){
+        let m;try{m=typeof d==='string'?JSON.parse(d):d}catch(x){return}
+        if(m&&m.t==='join'){
+          q=hub.join({send:t=>{if(conn.open)conn.send(t)},close:()=>{try{conn.close()}catch(x){}}},m.name);
+          if(!q)setTimeout(()=>{try{conn.close()}catch(x){}},500);
+        }
+        return;
+      }
+      hub.msg(q,d);
+    });
+    const gone=()=>{if(q){hub.drop(q);q=null}};
+    conn.on('close',gone);conn.on('error',gone);
+  });
+}
+function p2pJoin(code,name){
+  setErr('Conectando...');
+  loadPeer(e=>{
+    if(e)return setErr(e);
+    let peer,opened=false;
+    try{peer=new Peer()}catch(x){return setErr('No se pudo iniciar la conexión directa.')}
+    const fail=t=>{if(!opened){setErr(t);try{peer.destroy()}catch(x){}}};
+    peer.on('error',er=>{fail(er.type==='peer-unavailable'?'Sala no encontrada':'No se pudo conectar ('+er.type+'). Intenta otra vez.')});
+    peer.on('open',()=>{
+      const conn=peer.connect('kgame-'+code,{serialization:'json',reliable:true});
+      const to=setTimeout(()=>fail('No se pudo conectar con la sala. Puede ser tu red; intenta otra vez.'),12000);
+      conn.on('open',()=>{
+        clearTimeout(to);opened=true;
+        const api={get readyState(){return conn.open?1:0},send:t=>conn.send(t),close(){try{peer.destroy()}catch(x){}}};
+        MP=newMP(api);
+        MP.ping=setInterval(()=>{try{api.send('{"t":"ping"}')}catch(x){}},15000);
+        conn.send(JSON.stringify({t:'join',name}));
+        conn.on('close',()=>{if(MP&&MP.ws===api)leaveMP('El anfitrión cerró la sala.')});
+      });
+      conn.on('data',d=>{try{netMsg(typeof d==='string'?JSON.parse(d):d)}catch(x){console.error(x)}});
+    });
+  });
+}
 let lbMsg='';
 function renderLobby(){
   if(!MP||MP.slot<0)return;
   $('lb-code').textContent=MP.code;
   let base=location.origin;
   if(netMode==='local'&&/^(localhost|127\.|\[::1\])/.test(location.hostname)&&MP.lan[0])base='http://'+MP.lan[0]+':'+(MP.port||location.port||80);
-  $('lb-share').textContent=base+'/?sala='+MP.code;
+  const path=(base===location.origin)?location.pathname:'/';
+  $('lb-share').textContent=base+path+'?sala='+MP.code+(netCustom?'&srv='+encodeURIComponent(netCustom.replace(/\/ws$/,'')):'')+(netMode==='p2p'?'&p2p=1':'');
   const ul=$('lb-list');ul.textContent='';
   for(const q of MP.players){
     const li=document.createElement('li'),n=document.createElement('span');
@@ -581,7 +738,7 @@ function renderLobby(){
   $('lb-wait').textContent=lbMsg||(MP.host?(few?'Esperando a que se una alguien...':'Los lugares vacíos los ocupan bots (hasta '+NK+').'):'Esperando a que el anfitrión inicie...');
   lbMsg='';
 }
-function screen(id){for(const e of document.querySelectorAll('.scr'))e.hidden=e.id!==id;document.getElementById('msg').hidden=false}
+function screen(id){try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(e){}for(const e of document.querySelectorAll('.scr'))e.hidden=e.id!==id;document.getElementById('msg').hidden=false}
 function showEnd(){
   const pos=rank.indexOf(karts[PI])+1;finishPos=pos;
   document.getElementById('mt').textContent='¡'+pos+'º lugar, '+playerName+'!';
@@ -591,14 +748,20 @@ function showEnd(){
 let playerName='';
 try{playerName=localStorage.getItem('kg_name')||''}catch(e){}
 let last=0;
+let fpsAcc=0,fpsN=0;
 function loop(ts){
-  const dt=Math.min(0.05,(ts-last)/1000||0.016);last=ts;
+  const raw=(ts-last)/1000||0.016,dt=Math.min(0.05,raw);last=ts;
+  if(raw<0.2){fpsAcc+=raw;fpsN++}
+  if(fpsN>=60){ // celular lento: baja la resolución interna
+    if(fpsAcc/fpsN>0.026&&QH>150){QH=Math.max(150,QH-30);resize()}
+    fpsAcc=0;fpsN=0;
+  }
   update(dt);render();requestAnimationFrame(loop);
 }
 const $=id=>document.getElementById(id);
 function toMode(){
   $('hi').textContent=playerName;
-  if(pend&&!pendUsed){pendUsed=true;openNet(/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname)?'local':'online');$('rc').value=pend.toUpperCase().slice(0,5);return}
+  if(pend&&!pendUsed){pendUsed=true;openNet(qs.get('p2p')?'p2p':/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname)?'local':'online');$('rc').value=pend.toUpperCase().slice(0,5);return}
   screen('s-mode');
 }
 function saveName(){
@@ -614,9 +777,10 @@ $('b-online').onclick=()=>screen('s-online');
 $('b-back').onclick=toMode;
 $('b-local').onclick=()=>openNet('local');
 $('b-inet').onclick=()=>openNet('online');
+$('b-p2p').onclick=()=>openNet('p2p');
 $('b-back2').onclick=()=>screen('s-online');
-$('b-create').onclick=()=>netConnect({t:'create',name:playerName});
-function joinRoom(){const c=$('rc').value.trim().toUpperCase();if(!c){$('net-err').textContent='Escribe el código de la sala.';$('rc').focus();return}netConnect({t:'join',room:c,name:playerName})}
+$('b-create').onclick=()=>connect({t:'create',name:playerName});
+function joinRoom(){const c=$('rc').value.trim().toUpperCase();if(!c){$('net-err').textContent='Escribe el código de la sala.';$('rc').focus();return}connect({t:'join',room:c,name:playerName})}
 $('b-join').onclick=joinRoom;
 $('rc').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom()});
 $('b-begin').onclick=()=>{if(MP&&MP.host)MP.ws.send('{"t":"start"}')};
@@ -627,11 +791,20 @@ $('go').onclick=()=>{
   else{$('msg').hidden=true;reset()}
 };
 $('b-menu').onclick=()=>{if(MP)leaveMP();else{reset();state='ready';toMode()}};
-const pend=new URLSearchParams(location.search).get('sala');let pendUsed=false;
+const qs=new URLSearchParams(location.search),pend=qs.get('sala');let pendUsed=false;
+try{$('srv').value=qs.get('srv')||localStorage.getItem('kg_srv')||''}catch(e){$('srv').value=qs.get('srv')||''}
 
 /* ---------- controles ---------- */
 const keyMap={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'gas',KeyW:'gas',ArrowDown:'brake',KeyS:'brake',Space:'drift',ShiftLeft:'drift',ShiftRight:'drift'};
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=keyMap[e.code];if(k){inp[k]=1;e.preventDefault()}});
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(!$('msg').hidden){
+    if((e.code==='Enter'||e.code==='Space')&&e.target.tagName!=='BUTTON'){const bt=document.querySelector('.scr:not([hidden]) .mb');if(bt){bt.click();e.preventDefault()}}
+    return;
+  }
+  if(e.code==='KeyF'){toggleFS();e.preventDefault();return}
+  const k=keyMap[e.code];if(k){inp[k]=1;if(touchUI)setTouch(false);e.preventDefault()}
+});
 addEventListener('keyup',e=>{if(e.target.tagName==='INPUT')return;const k=keyMap[e.code];if(k){inp[k]=0;e.preventDefault()}});
 for(const [id,k] of [['bl','l'],['br','r'],['bg','gas'],['bb','brake'],['bd','drift']]){
   const el=document.getElementById(id);
@@ -639,8 +812,28 @@ for(const [id,k] of [['bl','l'],['br','r'],['bg','gas'],['bb','brake'],['bd','dr
   const off=e=>{inp[k]=0;el.classList.remove('on')};
   el.addEventListener('pointerdown',on);el.addEventListener('pointerup',off);el.addEventListener('pointercancel',off);el.addEventListener('lostpointercapture',off);
 }
-document.getElementById('pad').style.display=coarse?'block':'none';
-window.KG={get MP(){return MP},karts,inp,get state(){return state},set cd(v){cd=v},reset,get rank(){return rank},TR};
+const padEl=$('pad');
+function setTouch(v){touchUI=v;padEl.style.display=v?'block':'none';resize()}
+setTouch(coarse);
+addEventListener('touchstart',()=>{if(!touchUI)setTouch(true)},{passive:true});
+addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&touchUI&&!coarse)setTouch(false)});
+padEl.addEventListener('contextmenu',e=>e.preventDefault());
+const fsBtn=$('fs');
+function toggleFS(){
+  try{
+    const d=document;
+    if(!(d.fullscreenElement||d.webkitFullscreenElement)){
+      const r=(stage.requestFullscreen||stage.webkitRequestFullscreen).call(stage);
+      Promise.resolve(r).then(()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}).catch(()=>{});
+    }else{Promise.resolve((d.exitFullscreen||d.webkitExitFullscreen).call(d)).catch(()=>{})}
+  }catch(e){}
+}
+if(!(stage.requestFullscreen||stage.webkitRequestFullscreen))fsBtn.hidden=true;
+fsBtn.onclick=e=>{toggleFS();fsBtn.blur()};
+const clearInp=()=>{for(const k in inp)inp[k]=0;document.querySelectorAll('.b.on').forEach(e=>e.classList.remove('on'))};
+addEventListener('blur',clearInp);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInp()});
+window.KG={update,render,get MP(){return MP},karts,inp,get state(){return state},set cd(v){cd=v},reset,get rank(){return rank},TR};
 resize();reset();state='ready';
 requestAnimationFrame(loop);
 })();
